@@ -5,7 +5,6 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register('education',views.EducationView)
 
-
 urlpatterns = [
     path('',include(router.urls))
 ]
