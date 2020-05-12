@@ -6,7 +6,7 @@ class Job(models.Model):
     company_name = models.CharField(max_length=100, blank=False, default='')
     role = models.EmailField(max_length = 100, blank=False)
     start_date = models.DateField()
-    end_date = models.DateField()
+    end_date = models.DateField(null=True)
     currently_working = models.BooleanField()
     showcase = models.BooleanField()
     user = models.ForeignKey(Users, on_delete = models.CASCADE)

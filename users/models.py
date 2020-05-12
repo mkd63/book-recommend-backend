@@ -33,6 +33,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length = 100, default='',blank=True,null=True)
     dob = models.DateField(blank=True,null=True)
     gender = models.CharField(null=True,max_length = 10,blank=True)
+    is_setup = models.IntegerField(null=True,default=0)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
