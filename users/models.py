@@ -38,6 +38,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length = 100, default='',blank=True)
     dob = models.DateField( blank=True)
     gender = models.CharField(null=True,max_length = 10,blank=True)
+    is_setup = models.IntegerField(null=False,default=0)
 
     class Meta:
         indexes = [models.Index(fields=["first_name"])]
