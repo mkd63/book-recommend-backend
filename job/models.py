@@ -1,5 +1,4 @@
 from django.db import models
-from users.models import Users
 # Create your models here.
 class Job(models.Model):
 
@@ -8,8 +7,7 @@ class Job(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)
     currently_working = models.BooleanField()
-    showcase = models.BooleanField()
-    user = models.ForeignKey(Users, on_delete = models.CASCADE)
+    user = models.ForeignKey('users.Users', on_delete = models.CASCADE)
 
     def __str__(self):
         return self.name

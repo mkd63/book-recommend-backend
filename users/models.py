@@ -34,6 +34,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     dob = models.DateField(blank=True,null=True)
     gender = models.CharField(null=True,max_length = 10,blank=True)
     is_setup = models.IntegerField(null=True,default=0)
+    showcase_job = models.ForeignKey('job.Job', related_name='showcase_job', on_delete = models.CASCADE, null=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
