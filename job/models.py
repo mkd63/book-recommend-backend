@@ -3,7 +3,7 @@ from django.db import models
 class Job(models.Model):
 
     company_name = models.CharField(max_length=100, blank=False, default='')
-    role = models.EmailField(max_length = 100, blank=False)
+    role = models.CharField(max_length = 100, blank=False)
     start_date = models.DateField()
     end_date = models.DateField(null=True)
     currently_working = models.BooleanField()
