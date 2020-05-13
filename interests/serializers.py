@@ -6,4 +6,4 @@ class InterestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interests
-        fields = ('id','interest_name','user')
+        fields = ('id','name','user')
