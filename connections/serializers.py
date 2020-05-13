@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import Connections
 from . import models
 
-class CollectionsSerializer(serializers.ModelSerializer):
+class ConnectionsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Education
+        model = Connections
         fields = ('id', 'user1','user2')

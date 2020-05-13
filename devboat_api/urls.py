@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/v1/',include('job.urls')),
     path('api/v1/',include('projects.urls')),
     path('api/v1/',include('skills.urls')),
+    path('api/v1/',include('connections.urls')),
+    path('api/v1/',include('requests.urls')),
     path('api-auth/',include('rest_framework.urls')),
     path('api/v1/auth/', include('rest_auth.urls'))
 ]
