@@ -6,4 +6,4 @@ class SkillsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Skills
-        fields = ('id','skill_name','skill_level','user')
+        fields = ('id','name','level','user')
