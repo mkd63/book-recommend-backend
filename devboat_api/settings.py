@@ -11,22 +11,32 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from decouple import config
+import dj_database_url
 from datetime import timedelta
+import cloudinary
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.0/howto/static-files/
+STATIC_URL = '/static/'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '-t_gxy8sbtqt=-gb1oe9p!r!ntf8cnr22wd8cbp0v+8)9f+8^a'
+SECRET_KEY = config("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
+
+ALLOWED_HOSTS = [config("ALLOWED_HOST")]
+
+cloudinary.config(
+    cloud_name=config("CLOUDINARY_CLOUD_NAME"),
+    api_key=config("CLOUDINARY_API_KEY"),
+    api_secret=config("CLOUDINARY_SECRET_KEY"),
+)
 
 # Application definition
 INSTALLED_APPS = [
@@ -50,6 +60,16 @@ INSTALLED_APPS = [
     'requests'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -64,6 +84,14 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'devboat_api.urls'
+
+REST_USE_JWT = True
+
+JWT_AUTH = {"JWT_EXPIRATION_DELTA": timedelta(days=2)}
+
+AUTH_USER_MODEL = "users.Users"
+
+REST_AUTH_SERIALIZERS = {"USER_DETAILS_SERIALIZER": "users.serializers.UsersSerializer"}
 
 TEMPLATES = [
     {
@@ -82,20 +110,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'devboat_api.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'devboat_development',
-        'USER': 'postgres',
-        'PASSWORD': 'aahaNoob63',
-        'HOST': 'localhost',
-        'PORT': ''                 # set to empty string for default
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -128,26 +142,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ),
-}
-
-REST_USE_JWT = True
-
-JWT_AUTH = {"JWT_EXPIRATION_DELTA": timedelta(days=2)}
-
-STATIC_URL = '/static/'
-
-AUTH_USER_MODEL = "users.Users"
-
-REST_AUTH_SERIALIZERS = {"USER_DETAILS_SERIALIZER": "users.serializers.UsersSerializer"}
