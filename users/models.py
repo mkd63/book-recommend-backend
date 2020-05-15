@@ -38,6 +38,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    picture = models.TextField(blank=True, null=True)
+    cropped_data =models.TextField(blank=True, null=True)
 
     class Meta:
         indexes = [models.Index(fields=["first_name"])]
