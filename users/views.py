@@ -8,8 +8,29 @@ from rest_framework.response import Response
 from rest_framework import status
 import cloudinary.uploader
 import json
+from django.shortcuts import get_object_or_404
 
-class UsersView(viewsets.ModelViewSet):
+class MultipleFieldLookupMixin(object):
+    """
+    Apply this mixin to any view or viewset to get multiple field filtering
+    based on a `lookup_fields` attribute, instead of the default single field filtering.
+    """
+    def get_object(self):
+        queryset = self.get_queryset()             # Get the base queryset
+        queryset = self.filter_queryset(queryset)  # Apply any filter backends
+        field = self.kwargs.get(self.lookup_field)
+        filters = {}
+
+        if field.isdigit():
+            filters['pk'] = field
+        else:
+            filters['username'] = field
+
+        obj = get_object_or_404(queryset, **filters)  # Lookup the object
+        self.check_object_permissions(self.request, obj)  # check permissions.
+        return obj
+
+class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
     lookup_field = "username"
