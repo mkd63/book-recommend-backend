@@ -57,3 +57,24 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def verify(self, request):
+        verification_key = request.data['verification_key']
+
+        user = get_object_or_404(Users, verification_key=verification_key)
+        if user.is_verified == False:
+            current_time = datetime.datetime.now()
+            current_time = make_aware(current_time, pytz.UTC, False)
+            print(current_time)
+            print(user.key_expires)
+            if current_time > user.key_expires:
+                print("expired")
+            else: #Activation successful
+                user.is_verified = True
+                user.save()
+            return Response(status=status.HTTP_200_OK)
+        #If user is already active, simply display error message
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
