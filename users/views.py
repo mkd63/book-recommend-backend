@@ -9,6 +9,14 @@ from rest_framework import status
 import cloudinary.uploader
 import json
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+import datetime
+import pytz
+from django.utils.timezone import make_aware
+from decouple import config
+from django.utils.crypto import get_random_string
+import hashlib
+from django.core.mail import send_mail
 
 class MultipleFieldLookupMixin(object):
     """
@@ -78,3 +86,24 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def resend_verification_email(self, request):
+        user = get_object_or_404(Users, username=request.data["username"])
+        #We generate a random activation key
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+        secret_key = get_random_string(20, chars)
+        verification_key = hashlib.sha256((secret_key + user.username).encode('utf-8')).hexdigest()
+        user.verification_key = verification_key
+        user.key_expires = datetime.datetime.now() + datetime.timedelta(days=2)
+
+        subject = "Welcome " + user.first_name
+        message = "Verify here: \n" + 'http://' + config('DOMAIN') + '/verify/' + verification_key
+
+        send_mail(
+            subject,
+            message,
+            "Devboat Team",
+            [user.email]
+        )
+
+        return Response(status=status.HTTP_200_OK)
