@@ -18,6 +18,7 @@ from django.utils.crypto import get_random_string
 import hashlib
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
+from .recommendations import recommend
 
 class MultipleFieldLookupMixin(object):
     """
@@ -67,9 +68,16 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def recommendations(self, request, username=None):
+        user = get_object_or_404(Users, username=username)
+
+        data = recommend(user.username)
+
+        return Response(data, status=status.HTTP_200_OK)
+
     @action(detail=True, methods=['patch'], permission_classes=[AllowAny])
     def set_password(self, request, username=None):
-        print(username)
         user = get_object_or_404(Users, username=username)
         user.password = make_password(request.data["password"])
         user.save()
