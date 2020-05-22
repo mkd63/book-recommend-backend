@@ -17,6 +17,7 @@ from decouple import config
 from django.utils.crypto import get_random_string
 import hashlib
 from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 
 class MultipleFieldLookupMixin(object):
     """
@@ -66,27 +67,38 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['patch'], permission_classes=[AllowAny])
+    def set_password(self, request, username=None):
+        print(username)
+        user = get_object_or_404(Users, username=username)
+        user.password = make_password(request.data["password"])
+        user.save()
+
+        data = UsersSerializer(user).data
+        return Response(data, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def verify(self, request):
         verification_key = request.data['verification_key']
 
         user = get_object_or_404(Users, verification_key=verification_key)
-        if user.is_verified == False:
-            current_time = datetime.datetime.now()
-            current_time = make_aware(current_time, pytz.UTC, False)
 
-            if current_time > user.verification_key_expiry:
-                print("expired") # TODO: return valid Response
-            else:
-                user.is_verified = True
-                user.save()
-            return Response(status=status.HTTP_200_OK)
-        else:
+        current_time = datetime.datetime.now()
+        current_time = make_aware(current_time, pytz.UTC, False)
+
+        if current_time > user.verification_key_expiry or user.is_verified:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user.verification_key = None
+            user.verification_key_expiry = None
+            user.is_verified = True
+            user.save()
+            return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def resend_verification_email(self, request):
         user = get_object_or_404(Users, username=request.data["username"])
+
         #We generate a random activation key
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         secret_key = get_random_string(20, chars)
@@ -95,7 +107,7 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         user.verification_key_expiry = datetime.datetime.now() + datetime.timedelta(days=2)
 
         subject = "Welcome " + user.first_name
-        message = "Verify here: \n" + 'https://' + config('DOMAIN') + '/verify/' + verification_key
+        message = "Verify here: \n" + 'http://' + config('DOMAIN') + '/verify/' + verification_key
 
         send_mail(
             subject,
@@ -103,5 +115,55 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
             "Devboat Team",
             [user.email]
         )
+
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def send_reset_password_email(self, request):
+        user = get_object_or_404(Users, email=request.data["email"])
+
+        #We generate a random activation key
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+        secret_key = get_random_string(20, chars)
+        reset_password_key = hashlib.sha256((secret_key + user.username).encode('utf-8')).hexdigest()
+        user.reset_password_key = reset_password_key
+        user.reset_password_key_expiry = datetime.datetime.now() + datetime.timedelta(days=2)
+        user.save()
+
+        subject = "Welcome " + user.first_name
+        message = "Reset password here: \n" + 'http://' + config('DOMAIN') + '/reset/' + reset_password_key
+
+        send_mail(
+            subject,
+            message,
+            "Devboat Team",
+            [user.email]
+        )
+
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def reset(self, request):
+        reset_password_key = request.data['reset_password_key']
+
+        user = get_object_or_404(Users, reset_password_key=reset_password_key)
+        current_time = datetime.datetime.now()
+        current_time = make_aware(current_time, pytz.UTC, False)
+
+        data = UsersSerializer(user).data
+
+        if current_time > user.reset_password_key_expiry:
+            print("expired") # TODO: return valid Response
+        else:
+            return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def reset_done(self, request):
+        reset_password_key = request.data['reset_password_key']
+
+        user = get_object_or_404(Users, reset_password_key=reset_password_key)
+        user.reset_password_key = None
+        user.reset_password_key_expiry = None
+        user.save()
 
         return Response(status=status.HTTP_200_OK)
