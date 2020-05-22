@@ -1,27 +1,41 @@
 from connections.models import Connections
+from requests.models import Requests
 from django_pandas.io import read_frame
 import networkx as nx
 import matplotlib.pyplot as plt
 
-all_connections = Connections.objects.all()
-df = read_frame(all_connections)
-
-Graphtype = nx.Graph()
-G = nx.from_pandas_edgelist(df, 'user1', 'user2',  create_using=Graphtype)
-# nx.draw(G, with_labels = True)
-# plt.savefig("graph.png")
-
-def nodes_connected(u, v):
-    return u in G.neighbors(v)
-
 def recommend(user):
-    m = []
-    fr = list(G.neighbors(user))
-    for i, ibrdict in G.adjacency():
-        if(nodes_connected(user,i)):
-            for k in ibrdict.keys():
-                if(k != user and k not in fr and k not in m):
-                    m.append(k)
-    return m
+    all_connections = Connections.objects.all()
+    all_requests = Requests.objects.all()
 
-print(recommend('test4'))
+    connections_df = read_frame(all_connections)
+    connections_G = nx.from_pandas_edgelist(connections_df, 'user1', 'user2')
+
+    requests_df = read_frame(all_requests)
+    requests_G = nx.from_pandas_edgelist(requests_df, 'sender', 'receiver')
+
+    # plt.clf()
+    # nx.draw(connections_G, with_labels = True)
+    # plt.savefig("graph.png")
+
+    recommendations = []
+    requested = []
+
+    if user in requests_G:
+        requested = list(requests_G.neighbors(user))
+
+    if user in connections_G:
+        friends = list(connections_G.neighbors(user))
+        for friend in friends:
+            friend_relations = list(connections_G.neighbors(friend))
+            for f_relation in friend_relations:
+                if(
+                f_relation != user and
+                f_relation not in friends and
+                f_relation not in requested and
+                f_relation not in recommendations):
+                    recommendations.append(f_relation)
+
+    return recommendations
+
+print(recommend('techyon'))
