@@ -74,15 +74,13 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         if user.is_verified == False:
             current_time = datetime.datetime.now()
             current_time = make_aware(current_time, pytz.UTC, False)
-            print(current_time)
-            print(user.key_expires)
-            if current_time > user.key_expires:
-                print("expired")
-            else: #Activation successful
+
+            if current_time > user.verification_key_expiry:
+                print("expired") # TODO: return valid Response
+            else:
                 user.is_verified = True
                 user.save()
             return Response(status=status.HTTP_200_OK)
-        #If user is already active, simply display error message
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -94,10 +92,10 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         secret_key = get_random_string(20, chars)
         verification_key = hashlib.sha256((secret_key + user.username).encode('utf-8')).hexdigest()
         user.verification_key = verification_key
-        user.key_expires = datetime.datetime.now() + datetime.timedelta(days=2)
+        user.verification_key_expiry = datetime.datetime.now() + datetime.timedelta(days=2)
 
         subject = "Welcome " + user.first_name
-        message = "Verify here: \n" + 'http://' + config('DOMAIN') + '/verify/' + verification_key
+        message = "Verify here: \n" + 'https://' + config('DOMAIN') + '/verify/' + verification_key
 
         send_mail(
             subject,

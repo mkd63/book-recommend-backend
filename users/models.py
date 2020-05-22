@@ -40,8 +40,10 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     created_on = models.DateTimeField(auto_now_add=True)
     verification_key = models.CharField(max_length=128, blank=True, null=True)
-    key_expires = models.DateTimeField(blank=True, null=True)
+    verification_key_expiry = models.DateTimeField(blank=True, null=True)
     is_verified = models.BooleanField(default=False)
+    reset_password_key = models.CharField(max_length=128, blank=True, null=True)
+    reset_password_key_expiry = models.DateTimeField(blank=True, null=True)
     picture = models.TextField(blank=True, null=True)
     cropped_data = models.TextField(blank=True, null=True)
 

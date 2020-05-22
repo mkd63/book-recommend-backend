@@ -26,7 +26,7 @@ class UsersSerializer(serializers.ModelSerializer):
         secret_key = get_random_string(20, chars)
         verification_key = hashlib.sha256((secret_key + user.username).encode('utf-8')).hexdigest()
         user.verification_key = verification_key
-        user.key_expires = datetime.datetime.now() + datetime.timedelta(days=2)
+        user.verification_key_expiry = datetime.datetime.now() + datetime.timedelta(days=2)
         user.save()
 
         subject = "Welcome " + user.first_name
