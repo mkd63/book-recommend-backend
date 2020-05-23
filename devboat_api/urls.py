@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/v1/',include('connections.urls')),
     path('api/v1/',include('requests.urls')),
     path('api/v1/',include('posts.urls')),
+    path('api/v1/',include('upvotes.urls')),
     path('api-auth/',include('rest_framework.urls')),
     path('api/v1/auth/', include('rest_auth.urls'))
 ]
