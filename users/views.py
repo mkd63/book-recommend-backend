@@ -53,7 +53,16 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
             permission_classes = [IsLoggedInUserOrAdmin]
         return [permission() for permission in permission_classes]
 
-    def partial_update(self, request, username):
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def recommendations(self, request, username=None):
+        user = get_object_or_404(Users, username=username)
+
+        data = recommend(user.username)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'], permission_classes=[AllowAny])
+    def set_picture(self, request, username=None):
         user = Users.objects.get(username=username)
         data = request.data.copy()
         file = data['picture']
@@ -67,14 +76,6 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
-    def recommendations(self, request, username=None):
-        user = get_object_or_404(Users, username=username)
-
-        data = recommend(user.username)
-
-        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'], permission_classes=[AllowAny])
     def set_password(self, request, username=None):
