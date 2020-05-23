@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'interests',
     'projects',
     'connections',
-    'requests'
+    'requests',
+    'posts'
 ]
 
 REST_FRAMEWORK = {
