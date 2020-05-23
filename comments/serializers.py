@@ -4,5 +4,5 @@ from . import models
 
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Upvotes
+        model = Comments
         fields = ('id', 'content', 'post', 'user', 'created_on')
