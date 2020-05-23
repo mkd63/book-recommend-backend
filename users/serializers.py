@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id','username','email','first_name','last_name','password','dob','gender','is_setup','picture','cropped_data')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'dob', 'gender', 'is_setup', 'picture', 'cropped_data', 'created_on')
 
     def create(self, validated_data):
         user = models.Users(
