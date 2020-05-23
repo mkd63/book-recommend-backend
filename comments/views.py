@@ -3,5 +3,5 @@ from .models import Comments
 from .serializers import CommentsSerializer
 
 class CommentsView(viewsets.ModelViewSet):
-    queryset = Upvotes.objects.all()
+    queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
