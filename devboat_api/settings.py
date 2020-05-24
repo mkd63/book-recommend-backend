@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'requests',
     'posts',
     'upvotes',
-    'comments'
+    'comments',
+    'comment_upvotes'
 ]
 
 REST_FRAMEWORK = {
