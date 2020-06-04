@@ -11,11 +11,11 @@ class EducatonSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if validated_data["start_date"] > date.today():
             raise serializers.ValidationError("Start date cannot be in future");
-        #elif validated_data["currently_studying"] == False:
-        #    if validated_data["end_date"] > date.today():
-        #        raise serializers.ValidationError("End date cannot be in future");
-        #    elif validated_data["end_date"] < validated_data["start_date"]:
-        #        raise serializers.ValidationError("End date cannot be before start date.");
+        elif not validated_data["currently_studying"]:
+            if validated_data["end_date"] > date.today():
+                raise serializers.ValidationError("End date cannot be in future");
+            elif validated_data["end_date"] < validated_data["start_date"]:
+                raise serializers.ValidationError("End date cannot be before start date.");
 
         # Save job
         education = models.Education(
@@ -24,6 +24,7 @@ class EducatonSerializer(serializers.ModelSerializer):
             end_date=validated_data["end_date"],
             qualification_name=validated_data["qualification_name"],
             currently_studying=validated_data["currently_studying"],
+            user=validated_data["user"]
         )
 
         education.save()
