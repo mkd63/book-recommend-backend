@@ -1,0 +1,1 @@
+web: gunicorn devboat_api.wsgi
