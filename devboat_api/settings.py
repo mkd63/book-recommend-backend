@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'requests',
     'posts',
     'upvotes',
+    'books',
     'comments',
     'comment_upvotes'
 ]
