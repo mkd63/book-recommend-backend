@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'dob', 'gender', 'is_setup', 'picture', 'cropped_data', 'created_on')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'dob', 'gender', 'is_setup', 'picture', 'cropped_data', 'preferred_genres','created_on')
 
     def create(self, validated_data):
         user = models.Users(
@@ -18,6 +18,7 @@ class UsersSerializer(serializers.ModelSerializer):
             last_name=validated_data["last_name"],
             username=validated_data["username"],
             email=validated_data["email"],
+            preferred_genres=validated_data["preferred_genres"],
             password=make_password(validated_data["password"])
         )
 
@@ -35,7 +36,7 @@ class UsersSerializer(serializers.ModelSerializer):
         send_mail(
             subject,
             message,
-            "Devboat Team",
+            "Welcome to MyBooks",
             [user.email]
         )
 

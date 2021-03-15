@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -46,6 +47,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     reset_password_key_expiry = models.DateTimeField(blank=True, null=True)
     picture = models.TextField(blank=True, null=True)
     cropped_data = models.TextField(blank=True, null=True)
+    preferred_genres = ArrayField(models.CharField(max_length=30, blank=True),size=8,)
+
 
     class Meta:
         indexes = [models.Index(fields=["first_name"])]
