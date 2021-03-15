@@ -4,8 +4,8 @@ from users.models import Users
 
 class Books(models.Model):
     name = models.CharField(max_length=100)
-    author = ArrayField(models.CharField(max_length=10, blank=True),size=8)
-    genres = ArrayField(models.CharField(max_length=10, blank=True),size=8)
+    author = ArrayField(models.CharField(max_length=30, blank=True),size=8)
+    genres = ArrayField(models.CharField(max_length=30, blank=True),size=8)
     picture = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     about_text = models.CharField(max_length=100)
