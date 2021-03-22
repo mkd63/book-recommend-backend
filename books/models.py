@@ -9,8 +9,9 @@ class Books(models.Model):
     cropped_data = models.TextField(blank=True, null=True)
     picture = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    about_text = models.CharField(max_length=100)
+    about_text = models.CharField(max_length=3000)
     rating = models.FloatField()
+    google_link = models.CharField(max_length=200)
 
     class Meta:
         ordering = ['-rating']

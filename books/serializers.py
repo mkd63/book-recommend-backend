@@ -7,7 +7,7 @@ import json
 class BooksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
-        fields = ('id', 'name', 'author', 'genres', 'picture','cropped_data','about_text','rating', 'created_on')
+        fields = ('id', 'name', 'author', 'genres', 'picture','cropped_data','google_link','about_text','rating', 'created_on')
 
     def create(self, validated_data):
         file = validated_data['picture']
@@ -19,6 +19,7 @@ class BooksSerializer(serializers.ModelSerializer):
             genres=validated_data["genres"],
             about_text=validated_data["about_text"],
             rating=validated_data["rating"],
+            google_link=validated_data["google_link"],
             picture = json.dumps(upload_data),
             cropped_data = validated_data['cropped_data']
         )

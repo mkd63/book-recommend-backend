@@ -27,7 +27,7 @@ class BooksView(viewsets.ModelViewSet):
     def books_genre_recommendation(self, request, username=None):
         books = Books.objects.all().order_by('rating')
         user = get_object_or_404(Users, username=request.query_params.get('username').split("/")[0])
-        recommended_books = [];
+        recommended_books = []
         for i in user.preferred_genres:
             for j in books:
                 if i in j.genres:
@@ -51,4 +51,4 @@ class BooksView(viewsets.ModelViewSet):
         if data["token"]:
             return Response(rating_data, status=status.HTTP_200_OK)
         else:
-            return Response({"auth": "unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)    
+            return Response({"auth": "unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
