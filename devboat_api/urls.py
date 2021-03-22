@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/v1/',include('projects.urls')),
     path('api/v1/',include('skills.urls')),
     path('api/v1/',include('connections.urls')),
+    path('api/v1/',include('ratings.urls')),
     path('api/v1/',include('requests.urls')),
     path('api/v1/',include('posts.urls')),
     path('api/v1/',include('upvotes.urls')),

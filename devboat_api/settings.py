@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'projects',
     'connections',
     'requests',
+    'ratings',
     'posts',
     'upvotes',
     'books',
