@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.core import serializers
 from django.http import HttpResponse
+from .recommendations import recommend
+from django.shortcuts import get_object_or_404
+
 
 class RatingsView(viewsets.ModelViewSet):
     queryset = Ratings.objects.all()
@@ -28,3 +31,23 @@ class RatingsView(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(True)
+
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated])
+    def recommendations(self, request, username=None):
+        data = request.data.copy()
+        user = get_object_or_404(Users, username=data["username"])
+        users_books = Ratings.objects.filter(user_id=user.id).values()
+        arr=[]
+        for ub in users_books:
+            book= Books.objects.get(id=ub.get("book_id"))
+            arr.append((book.name,ub.get("rating")))
+
+        recommended_data = recommend(user.id,arr)
+        book_arr=[]
+        for rb in recommended_data.keys().tolist():
+            book= Books.objects.get(name=rb)
+            book_arr.append(book)
+
+        print(book_arr)
+        serialized_data = serializers.serialize("json", book_arr)
+        return HttpResponse(serialized_data,status=status.HTTP_200_OK,content_type="application/json")
