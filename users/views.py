@@ -61,6 +61,17 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
 
         return Response(data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def admin(self, request):
+        key="A2345918012"
+        data = request.data.copy()
+        dict={}
+        if data["key"] == key:
+            dict["success"] = True
+        else:
+            dict["success"] = False
+        return Response(dict, status=status.HTTP_200_OK)
+
     @action(detail=True, methods=['patch'], permission_classes=[AllowAny])
     def set_picture(self, request, username=None):
         user = Users.objects.get(username=username)
@@ -145,7 +156,7 @@ class UsersView(MultipleFieldLookupMixin, viewsets.ModelViewSet):
         send_mail(
             subject,
             message,
-            "Devboat Team",
+            "My Books Team",
             [user.email]
         )
 
