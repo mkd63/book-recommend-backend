@@ -28,7 +28,7 @@ def recommend(user,input):
     books = read_frame(all_books)
     ratings_df = read_frame(all_ratings)
     books_df = books.rename(columns = {'name': 'book'}, inplace = False)
-    print(ratings_df.head())
+    print(ratings_df)
     print(books_df.head())
     ratings = pd.merge(ratings_df, books_df, on = 'book')
     ratings = pd.DataFrame(data = ratings)
