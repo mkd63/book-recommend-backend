@@ -36,17 +36,18 @@ def recommend(user,input):
     ratings = ratings_df.pivot(index='user', columns='book', values='rating')
     print(ratings.head())
     ratings.fillna(0, inplace=True)
-    ratings.reset_index()
+
     print(ratings.head())
     df_std = ratings.apply(standardize).T
+    df_std.fillna(0, inplace=True)
+
     print(df_std)
     sparse_df = sparse.csr_matrix(df_std.values)
+    print(sparse_df)
     corrMatrix = pd.DataFrame(cosine_similarity(sparse_df),index=ratings.columns,columns=ratings.columns)
     print(corrMatrix)
     corrMatrix = ratings.corr(method='pearson')
     print(corrMatrix.index.names)
-    corrMatrix.columns = corrMatrix.columns.str.strip()
-    corrMatrix.reset_index()
     similar_scores = pd.DataFrame()
     for book,rating in input:
         similar_scores = similar_scores.append(get_similar(book,rating,corrMatrix),ignore_index = True)
