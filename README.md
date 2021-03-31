@@ -35,10 +35,6 @@ PostgreSQL relational database has been used to store and manage the data.
 5.	Then finally, run python manage.py runserver to run the Django API server.
 
 
-### Contributors
+## API Documentation
 
-| Part           | Contributor                                   |
-| :------------- | :-------------------------------------------- |
-| Models and API | [Aahan Sharma](https://github.com/mkd63) |
-| Postgres       | [Aahan Sharma](https://github.com/mkd63) |
-
+see documentation [here](backend_documentation.md)
